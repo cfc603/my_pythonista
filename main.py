@@ -1,3 +1,4 @@
+import json
 import random
 import time
 
@@ -6,9 +7,12 @@ import location
 import ui
 
 from objc_util import on_main_thread
+from pathlib import Path
 
 
 COLORS = ["red", "blue", "green"]
+CWD = Path(__file__).parent
+DATA_DIR = Path(CWD, "data")
 
 logging = False
 
@@ -31,6 +35,27 @@ def enable_logging():
     gps_logger()
 
 
+def save_location_data(data):
+    """Get or create data file and append new data"""
+    location_data = Path(DATA_DIR, "pending_location_data.json")
+    if location_data.exists():
+        with open(location_data) as of:
+            existing_data = json.load(of)
+    else:
+        existing_data = []
+    existing_data.append(data)
+
+    with open(location_data, "w") as of:
+        json.dump(existing_data, of)
+
+    # once file has 600 entries, rename it to be sent to API
+    if len(existing_data) == 600:
+        archived = list(DATA_DIR.glob("location_data_*.json"))
+        location_data.rename(
+            Path(DATA_DIR, f"location_data_{len(archived)+1}.json")
+        )
+
+
 @ui.in_background
 def gps_logger():
     while logging:
@@ -41,7 +66,7 @@ def gps_logger():
 
         loc = location.get_location()
         location.stop_updates()
-        print(loc)
+        save_location_data(loc)
 
 
 if __name__ == "__main__":
