@@ -35,9 +35,9 @@ if __name__ == "__main__":
     # Create view changing color display and button to cancel
     view = ui.View()
     view.name = "GPS Logging"
-    view.background_color = "blue"
+    view.background_color = "white"
 
-    button = ui.Button("Stop GPS Logging")
+    button = ui.Button(title="Stop GPS Logging")
     button.center = (view.width * 0.5, view.height * 0.5)
     button.flex = 'LRTB'
     button.action = enable_logging
