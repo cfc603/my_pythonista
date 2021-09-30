@@ -1,3 +1,4 @@
+import random
 import time
 
 import console
@@ -33,11 +34,24 @@ def gps_logger():
         print(loc)
 
 
+@ui.in_background
+def update_view_color():
+    while logging:
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+        view.background_color = (r, g, b, 1.0)
+        time.sleep(5)
+
+
 if __name__ == "__main__":
     console.clear()
     console.alert("GPS Logging", "Start GPS Logging?", "Okay")
     console.hud_alert("Starting...")
+
+    # enable background tasks
     enable_logging()
+    update_view_color()
 
     # Create view changing color display and button to cancel
     view = ui.View()
