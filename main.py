@@ -13,6 +13,7 @@ from pathlib import Path
 COLORS = ["red", "blue", "green"]
 CWD = Path(__file__).parent
 DATA_DIR = Path(CWD, "data")
+LOCATION_DATA_FILE = Path(DATA_DIR, "pending_location_data.json")
 
 logging = False
 
@@ -21,6 +22,10 @@ class MainView(ui.View):
 
     def update(self):
         self.background_color = random.choice(COLORS)
+
+    def will_close(self):
+        location_data_archive()
+        on_main_thread(console.set_idle_timer_disabled)(False)
 
 
 def disable_logging(sender):
@@ -35,25 +40,28 @@ def enable_logging():
     gps_logger()
 
 
-def save_location_data(data):
+def location_data_archive():
+    archived = list(DATA_DIR.glob("location_data_*.json"))
+    LOCATION_DATA_FILE.rename(
+        Path(DATA_DIR, f"location_data_{len(archived)+1}.json")
+    )
+
+
+def location_data_save(data):
     """Get or create data file and append new data"""
-    location_data = Path(DATA_DIR, "pending_location_data.json")
-    if location_data.exists():
-        with open(location_data) as of:
+    if LOCATION_DATA_FILE.exists():
+        with open(LOCATION_DATA_FILE) as of:
             existing_data = json.load(of)
     else:
         existing_data = []
     existing_data.append(data)
 
-    with open(location_data, "w") as of:
+    with open(LOCATION_DATA_FILE, "w") as of:
         json.dump(existing_data, of)
 
     # once file has 600 entries, rename it to be sent to API
     if len(existing_data) == 600:
-        archived = list(DATA_DIR.glob("location_data_*.json"))
-        location_data.rename(
-            Path(DATA_DIR, f"location_data_{len(archived)+1}.json")
-        )
+        location_data_archive()
 
 
 @ui.in_background
@@ -66,7 +74,7 @@ def gps_logger():
 
         loc = location.get_location()
         location.stop_updates()
-        save_location_data(loc)
+        location_data_save(loc)
 
 
 if __name__ == "__main__":
