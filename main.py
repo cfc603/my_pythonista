@@ -9,9 +9,9 @@ logging = False
 
 
 def disable_logging(sender):
+    global logging
     logging = False
-    print(dir(sender))
-    print(sender.superview)
+    sender.superview.close()
 
 
 def enable_logging():
