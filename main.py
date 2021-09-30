@@ -6,16 +6,15 @@ import location
 import ui
 
 
+COLORS = ["red", "blue", "green"]
+
 logging = False
 
 
 class MainView(ui.View):
 
     def update(self):
-        r = random.randint(0, 255)
-        g = random.randint(0, 255)
-        b = random.randint(0, 255)
-        self.background_color = (r, g, b, 1.0)
+        self.background_color = random.choice(COLORS)
 
 
 def disable_logging(sender):
