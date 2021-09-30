@@ -8,9 +8,9 @@ import ui
 logging = False
 
 
-def enable_logging(sender):
+def enable_logging(sender=None):
     global logging
-    logging = sender.value
+    logging = not logging
     gps_logger()
 
 
@@ -31,6 +31,7 @@ if __name__ == "__main__":
     console.clear()
     console.alert("GPS Logging", "Start GPS Logging?", "Okay")
     console.hud_alert("Starting...")
+    enable_logging()
 
     # Create view changing color display and button to cancel
     view = ui.View()
