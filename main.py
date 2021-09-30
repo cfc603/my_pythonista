@@ -9,6 +9,19 @@ import ui
 logging = False
 
 
+class MainView(ui.View):
+
+    name = "GPS Logging"
+    background_color = "white"
+    update_interval = 5
+
+    def update(self):
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+        self.background_color = (r, g, b, 1.0)
+
+
 def disable_logging(sender):
     global logging
     logging = False
@@ -34,16 +47,6 @@ def gps_logger():
         print(loc)
 
 
-@ui.in_background
-def update_view_color():
-    while logging:
-        r = random.randint(0, 255)
-        g = random.randint(0, 255)
-        b = random.randint(0, 255)
-        view.background_color = (r, g, b, 1.0)
-        time.sleep(5)
-
-
 if __name__ == "__main__":
     console.clear()
     console.alert("GPS Logging", "Start GPS Logging?", "Okay")
@@ -51,12 +54,9 @@ if __name__ == "__main__":
 
     # enable background tasks
     enable_logging()
-    update_view_color()
 
     # Create view changing color display and button to cancel
-    view = ui.View()
-    view.name = "GPS Logging"
-    view.background_color = "white"
+    view = ui.MainView()
 
     button = ui.Button(title="Stop GPS Logging")
     button.center = (view.width * 0.5, view.height * 0.5)
