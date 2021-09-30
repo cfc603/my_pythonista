@@ -46,6 +46,7 @@ if __name__ == "__main__":
     console.clear()
     console.alert("GPS Logging", "Start GPS Logging?", "Okay")
     console.hud_alert("Starting...")
+    console.set_idle_timer_disabled = True
 
     # enable background tasks
     enable_logging()
