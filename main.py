@@ -38,6 +38,7 @@ def gps_logger():
         time.sleep(1)
 
         loc = location.get_location()
+        console.hud_alert("Logging...", duration=0.5)
         location.stop_updates()
         print(loc)
 
@@ -46,7 +47,6 @@ if __name__ == "__main__":
     console.clear()
     console.alert("GPS Logging", "Start GPS Logging?", "Okay")
     console.hud_alert("Starting...")
-    console.set_idle_timer_disabled = True
 
     # enable background tasks
     enable_logging()
