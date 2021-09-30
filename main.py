@@ -8,9 +8,15 @@ import ui
 logging = False
 
 
-def enable_logging(sender=None):
+def disable_logging(sender):
+    logging = False
+    print(dir(sender))
+    print(sender.superview)
+
+
+def enable_logging():
     global logging
-    logging = not logging
+    logging = True
     gps_logger()
 
 
@@ -41,7 +47,7 @@ if __name__ == "__main__":
     button = ui.Button(title="Stop GPS Logging")
     button.center = (view.width * 0.5, view.height * 0.5)
     button.flex = 'LRTB'
-    button.action = enable_logging
+    button.action = disable_logging
 
     view.add_subview(button)
     view.present('sheet')
