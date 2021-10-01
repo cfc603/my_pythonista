@@ -1,5 +1,6 @@
 import json
 import random
+import tarfile
 import time
 
 import console
@@ -41,10 +42,12 @@ def enable_logging():
 
 
 def location_data_archive():
-    archived = list(DATA_DIR.glob("location_data_*.json"))
-    LOCATION_DATA_FILE.rename(
-        Path(DATA_DIR, f"location_data_{len(archived)+1}.json")
-    )
+    archived = list(DATA_DIR.glob("location_data_*.tar.xz"))
+    archive_file = Path(DATA_DIR, f"location_data_{len(archived) + 1}.tar.xz")
+    with tarfile.open(archive_file, "w:xz") as open_tarfile:
+        open_tarfile(LOCATION_DATA_FILE)
+
+    LOCATION_DATA_FILE.unlink()
 
 
 def location_data_save(data):
