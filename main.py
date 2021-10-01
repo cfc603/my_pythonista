@@ -42,10 +42,10 @@ def enable_logging():
 
 
 def location_data_archive():
-    archived = list(DATA_DIR.glob("location_data_*.tar.xz"))
-    archive_file = Path(DATA_DIR, f"location_data_{len(archived) + 1}.tar.xz")
-    with tarfile.open(archive_file, "w:xz") as open_tarfile:
-        open_tarfile(LOCATION_DATA_FILE)
+    archived = list(DATA_DIR.glob("location_data_*.tar.gz"))
+    archive_file = Path(DATA_DIR, f"location_data_{len(archived) + 1}.tar.gz")
+    with tarfile.open(archive_file, "w:gz") as open_tarfile:
+        open_tarfile.add(LOCATION_DATA_FILE)
 
     LOCATION_DATA_FILE.unlink()
 
