@@ -47,10 +47,11 @@ def archive_submit():
         with open(archive, "rb") as open_file:
             response = requests.post(
                 API_URL,
-                files={archive.name: open_file},
+                files={"archive": open_file},
                 headers={"Authorization": f"Token {API_TOKEN}"}
             )
-            print(response)
+        if response.status_code == 200:
+            os.remove(archive)
 
 
 def disable_logging(sender):
@@ -69,7 +70,7 @@ def location_data_archive():
     archived = list(DATA_DIR.glob("location_data_*.tar.gz"))
     archive_file = Path(DATA_DIR, f"location_data_{len(archived) + 1}.tar.gz")
     with tarfile.open(archive_file, "w:gz") as open_tarfile:
-        open_tarfile.add(LOCATION_DATA_FILE)
+        open_tarfile.add(LOCATION_DATA_FILE, arcname=LOCATION_DATA_FILE.name)
 
     os.remove(LOCATION_DATA_FILE)
 
