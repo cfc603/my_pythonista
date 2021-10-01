@@ -1,9 +1,12 @@
 import json
+import os
 import random
+import requests
 import tarfile
 import time
 
 import console
+import keychain
 import location
 import ui
 
@@ -11,6 +14,8 @@ from objc_util import on_main_thread
 from pathlib import Path
 
 
+API_URL = ""
+API_TOKEN = keychain.get_password("gps_logging", "api")
 COLORS = ["red", "blue", "green"]
 CWD = Path(__file__).parent
 DATA_DIR = Path(CWD, "data")
@@ -26,7 +31,26 @@ class MainView(ui.View):
 
     def will_close(self):
         location_data_archive()
+        archive_submit()
         on_main_thread(console.set_idle_timer_disabled)(False)
+
+
+@ui.in_background
+def archive_runner():
+    while logging:
+        time.sleep(10)
+        archive_submit()
+
+
+def archive_submit():
+    for archive in DATA_DIR.glob("location_data_*.tar.gz"):
+        with open(archive, "rb") as open_file:
+            response = requests.post(
+                API_URL,
+                files={archive.name: open_file},
+                headers={"Authorization": f"Token {API_TOKEN}"}
+            )
+            print(response)
 
 
 def disable_logging(sender):
@@ -47,7 +71,7 @@ def location_data_archive():
     with tarfile.open(archive_file, "w:gz") as open_tarfile:
         open_tarfile.add(LOCATION_DATA_FILE)
 
-    LOCATION_DATA_FILE.unlink()
+    os.remove(LOCATION_DATA_FILE)
 
 
 def location_data_save(data):
@@ -88,6 +112,7 @@ if __name__ == "__main__":
 
     # enable background tasks
     enable_logging()
+    archive_runner()
 
     # Create view changing color display and button to cancel
     view = MainView()
